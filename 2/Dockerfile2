@@ -1,0 +1,21 @@
+FROM ubuntu:latest
+
+RUN apt-get update
+
+RUN apt-get install wget -y
+
+RUN apt-get install gnupg -y
+
+RUN wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | apt-key add -
+
+RUN echo "deb https://pkg.jenkins.io/debian binary/" >> /etc/apt/sources.list
+
+RUN apt-get update
+
+RUN apt-get install jenkins -y
+
+RUN apt-get install openjdk-11-jdk -y
+
+RUN cd /usr/share/jenkins/
+
+CMD ["/bin/bash"]
