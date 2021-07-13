@@ -267,23 +267,37 @@ docker build -t romrsch/node -f Dockerfile .
 docker images 
 REPOSITORY            TAG       IMAGE ID       CREATED              SIZE
 romrsch/node          latest    075d5e62fcbd   About a minute ago   959MB
+ubuntu                latest    9873176a8ff5   3 weeks ago         72.7MB
+
 
 docker run -d -p 3000:3000 --net=bridge romrsch/node npm start
 5dbdc6e806fd4861343e4dda40ab9c4178f7f4e4b8d2cbc6aaf0463ce72d292b
 
-docker ps
-CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                       NAMES
-5dbdc6e806fd   romrsch/node   "docker-entrypoint.s…"   34 seconds ago   Up 33 seconds   0.0.0.0:3000->3000/tcp, :::3000->3000/tcp   recursing_kapitsa
+````
 
-docker  exec -it recursing_kapitsa /bin/bash
-root@5dbdc6e806fd:/nodejs-demo# 
-root@5dbdc6e806fd:/nodejs-demo# apt-get update
-root@5dbdc6e806fd:/nodejs-demo# apt-get install curl wget
+Запустим второй контейнер `Ubuntu` и установим curl
+
+![alt text](https://i.ibb.co/tQFSb16/docker-ps-3.jpg)
 
 ```
+docker run -it ubuntu bash
+
+root@07ab8bd9dd2e:/# 
+root@07ab8bd9dd2e:/# apt-get update
+root@07ab8bd9dd2e:/# apt-get install curl wget
+```
+
+Добавим сеть контейнера `Ubuntu` к bridge контейнера `romrsch/node`
+
+![alt text](https://i.ibb.co/5vVfxdq/docker-network.jpg)
+
 
 ```
-ser@ubuntu:~/netology/5.4/2$ docker network inspect bridge
+user@ubuntu:~/netology/5.4$  docker network connect bridge 07ab8bd9dd2e
+Error response from daemon: endpoint with name loving_blackburn already exists in network bridge
+```
+```
+user@ubuntu:~/netology/5.4$  docker network inspect bridge 
 [
     {
         "Name": "bridge",
@@ -310,6 +324,13 @@ ser@ubuntu:~/netology/5.4/2$ docker network inspect bridge
         },
         "ConfigOnly": false,
         "Containers": {
+            "07ab8bd9dd2e96dfcb805f29fcf14968e0cee61a5aada3b586c581f8c216bd36": {
+                "Name": "loving_blackburn",
+                "EndpointID": "c0695179da5c3dab138fe24fd3c90edf525023a63d7c95c01ae53cacb74324ac",
+                "MacAddress": "02:42:ac:11:00:03",
+                "IPv4Address": "172.17.0.3/16",
+                "IPv6Address": ""
+            },
             "5dbdc6e806fd4861343e4dda40ab9c4178f7f4e4b8d2cbc6aaf0463ce72d292b": {
                 "Name": "recursing_kapitsa",
                 "EndpointID": "a9e138c992dacf363c82a1a035f5d8668d93dc15174a9469e6c92bf72f409994",
@@ -329,20 +350,20 @@ ser@ubuntu:~/netology/5.4/2$ docker network inspect bridge
         "Labels": {}
     }
 ]
-
-```
-Посмотреть список сетей
-```
-user@ubuntu:~/netology/5.4/2$ docker network ls
-NETWORK ID     NAME      DRIVER    SCOPE
-da88ccd15ee5   bridge    bridge    local
-b4a6fac30126   host      host      local
-e5c5c3dcc35c   none      null      local
-user@ubuntu:~/netology/5.4/2$
 ```
 
----
+![alt text](https://i.ibb.co/9s1PJtr/bridge.jpg)
 
+Тестируем с `Ubuntu` запускаем `root@07ab8bd9dd2e:/# curl 172.17.0.2:3000`
+
+![alt text](https://i.ibb.co/WWm3fsw/curl.jpg)
+
+
+Ссылка на образ `romrsch/node`
+
+https://hub.docker.com/repository/docker/romrsch/node
+
+`docker pull romrsch/node:latest`
 
 
 
